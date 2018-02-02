@@ -16,6 +16,7 @@
 #define DISTANCE_MAX 50
 #define DISTANCE_HISTORY 10
 #define PEAK_THRESHOLD 2
+#define PLAYRATE_LOOKBACK 4
 
 // Playing state
 #define PLAYING 1
@@ -70,11 +71,11 @@ void getCurrentDistance() {
  *    Output: sets `playState`
  */
 bool playState = NOT_PLAYING;
-unsigned long equalTimestamp;
 float previous;
 float current;
 int repeatCtr = 0;
 float peak = 50.0;
+float playRate;
 
 void determinePlayState() {
   current = bufferAverage(distanceMeasurements, 0, distanceMeasurements.size());
@@ -83,10 +84,16 @@ void determinePlayState() {
   if((current - peak) > PEAK_THRESHOLD || current == 50.0){
     repeatCtr = 0;
     playState = NOT_PLAYING;
-    if(current == 50.0) peak = 50.0;
+    if(current == 50.0) { 
+      peak = 50.0; 
+      playRate = 0;
+    }
   }
   // If not moving, force "breath"
-  else if(repeatCtr > 3) peak = 0.0;
+  else if(repeatCtr > 3) { 
+    peak = 0.0; 
+    playRate = 0;
+  }
   // If moving, update peak
   else {
     playState = PLAYING; 
@@ -97,14 +104,28 @@ void determinePlayState() {
   previous = current;
 }
 
+
+void determinePlayRate() {
+  float currentValue = distanceMeasurements.last();
+  float currentTimestamp = distanceTimestamps.last();
+  float lookbackIndex = max(0, distanceMeasurements.size() - PLAYRATE_LOOKBACK);
+  float lookbackValue = distanceMeasurements[lookbackIndex];
+  float lookbackTimestamp = distanceTimestamps[lookbackIndex];
+
+  playRate = max(0, (lookbackValue - currentValue) / (currentTimestamp - lookbackTimestamp));
+}
+
 void loop() {
   getCurrentDistance();
   determinePlayState();
   if(playState == PLAYING) {
-//    determinePlayRate();
+    determinePlayRate();
   }
   Serial.print(playState);
   Serial.print(" : ");
   Serial.print(current); 
-  Serial.print(", peak: "); Serial.println(peak);
+  Serial.print(", peak: "); 
+  Serial.print(peak);
+  Serial.print(", rate: "); 
+  Serial.println(playRate); 
 }
