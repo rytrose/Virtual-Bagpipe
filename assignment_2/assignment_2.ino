@@ -14,6 +14,10 @@
 #define RED 11
 #define GREEN 9
 #define BLUE 10
+#define BTN0 7
+#define BTN1 6
+#define BTN2 5
+#define BTN3 4
 
 // Thresholds, data pruning constants
 #define DISTANCE_MAX 50
@@ -34,6 +38,11 @@ void setup() {
   pinMode(RED, OUTPUT); // Red output
   pinMode(BLUE, OUTPUT); // Red output
   pinMode(GREEN, OUTPUT); // Red output
+
+  pinMode(BTN0, INPUT);
+  pinMode(BTN1, INPUT);
+  pinMode(BTN2, INPUT);
+  pinMode(BTN3, INPUT);
 }
 
 float bufferAverage(CircularBuffer<int,DISTANCE_HISTORY> b, int i1, int i2) {
@@ -139,12 +148,13 @@ void loop() {
   }
   Serial.print(playState);
   Serial.print(" ");
-  Serial.println(playRate * 100000);
-//  Serial.print(playState);
-//  Serial.print(" : ");
-//  Serial.print(current); 
-//  Serial.print(", peak: "); 
-//  Serial.print(peak);
-//  Serial.print(", rate: "); 
-//  Serial.println(playRate); 
+  Serial.print(playRate * 100000);
+  Serial.print(" ");
+  Serial.print(digitalRead(BTN0));
+  Serial.print(" ");
+  Serial.print(digitalRead(BTN1));
+  Serial.print(" ");
+  Serial.print(digitalRead(BTN2));
+  Serial.print(" ");
+  Serial.println(digitalRead(BTN3));
 }
