@@ -11,6 +11,9 @@
 // Pin definitions
 #define TRIG 13
 #define ECHO 12
+#define RED 11
+#define GREEN 9
+#define BLUE 10
 
 // Thresholds, data pruning constants
 #define DISTANCE_MAX 50
@@ -27,6 +30,10 @@ void setup() {
 
   pinMode(TRIG, OUTPUT); // Ultrasound output
   pinMode(ECHO, INPUT); // Ultrasound input
+
+  pinMode(RED, OUTPUT); // Red output
+  pinMode(BLUE, OUTPUT); // Red output
+  pinMode(GREEN, OUTPUT); // Red output
 }
 
 float bufferAverage(CircularBuffer<int,DISTANCE_HISTORY> b, int i1, int i2) {
@@ -88,15 +95,13 @@ void determinePlayState() {
   if((current - peak) > PEAK_THRESHOLD || current == 50.0){
     repeatCtr = 0;
     playState = NOT_PLAYING;
-    if(current == 50.0) { 
-      peak = 50.0; 
-      playRate = 0;
-    }
+    playRate = 0.0;
+    if(current == 50.0) peak = 50.0; 
   }
   // If not moving, force "breath"
   else if(repeatCtr > 3) { 
     peak = 0.0; 
-    playRate = 0;
+    playRate = 0.0;
   }
   // If moving, update peak
   else {
@@ -121,16 +126,24 @@ void determinePlayRate() {
 }
 
 void loop() {
+  analogWrite(RED, 0);
+  analogWrite(BLUE, 0);
+  analogWrite(GREEN, 0);
+  
   getCurrentDistance();
   determinePlayState();
   if(playState == PLAYING) {
     determinePlayRate();
+    analogWrite(BLUE, min(255, round(playRate * 100)));
   }
   Serial.print(playState);
-  Serial.print(" : ");
-  Serial.print(current); 
-  Serial.print(", peak: "); 
-  Serial.print(peak);
-  Serial.print(", rate: "); 
-  Serial.println(playRate); 
+  Serial.print(" ");
+  Serial.println(playRate * 100);
+//  Serial.print(playState);
+//  Serial.print(" : ");
+//  Serial.print(current); 
+//  Serial.print(", peak: "); 
+//  Serial.print(peak);
+//  Serial.print(", rate: "); 
+//  Serial.println(playRate); 
 }
