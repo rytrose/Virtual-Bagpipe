@@ -15,7 +15,7 @@
 // Thresholds, data pruning constants
 #define DISTANCE_MAX 50
 #define DISTANCE_HISTORY 10
-#define PEAK_THRESHOLD 1
+#define PEAK_THRESHOLD 2
 
 // Playing state
 #define PLAYING 1
@@ -70,35 +70,31 @@ void getCurrentDistance() {
  *    Output: sets `playState`
  */
 bool playState = NOT_PLAYING;
-bool equalFlag = false;
 unsigned long equalTimestamp;
 float previous;
-float lastPrev;
 float current;
-float lastCurr;
 int repeatCtr = 0;
 float peak = 50.0;
-bool prevState;
-bool switchFlag;
+
 void determinePlayState() {
-  previous = bufferAverage(distanceMeasurements, 0, distanceMeasurements.size() - 1);
-  current = bufferAverage(distanceMeasurements, 1, distanceMeasurements.size());
-  // When motion moves up, immediately stop playing
+  current = bufferAverage(distanceMeasurements, 0, distanceMeasurements.size());
+ 
+  // When motion moves up, stop playing and force "breath"
   if((current - peak) > PEAK_THRESHOLD || current == 50.0){
+    repeatCtr = 0;
     playState = NOT_PLAYING;
-    if(current == 50.0) peak = 50.0; repeatCtr = 0;
+    if(current == 50.0) peak = 50.0;
   }
+  // If not moving, force "breath"
   else if(repeatCtr > 3) peak = 0.0;
-  // If the previous value is equal
+  // If moving, update peak
   else {
     playState = PLAYING; 
     if(current < peak) peak = current;
   }
 
-  if(lastPrev == previous && lastCurr == current) repeatCtr++;
-  lastPrev = previous;
-  lastCurr = current;
-  prevState = playState;
+  if(previous == current) repeatCtr++;
+  previous = current;
 }
 
 void loop() {
@@ -109,6 +105,6 @@ void loop() {
   }
   Serial.print(playState);
   Serial.print(" : ");
-  Serial.print(previous); Serial.print("->"); Serial.print(current); 
+  Serial.print(current); 
   Serial.print(", peak: "); Serial.println(peak);
 }
