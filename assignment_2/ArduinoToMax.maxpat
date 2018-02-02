@@ -38,6 +38,60 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"format" : 6,
+					"id" : "obj-25",
+					"maxclass" : "flonum",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 593.0, 662.0, 50.0, 22.0 ],
+					"style" : ""
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-14",
+					"maxclass" : "newobj",
+					"numinlets" : 3,
+					"numoutlets" : 1,
+					"outlettype" : [ "float" ],
+					"patching_rect" : [ 482.0, 601.0, 75.0, 22.0 ],
+					"style" : "",
+					"text" : "slide 10. 20."
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-9",
+					"maxclass" : "number",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 542.0, 722.0, 50.0, 22.0 ],
+					"style" : ""
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"format" : 6,
+					"id" : "obj-3",
+					"maxclass" : "flonum",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 439.0, 534.0, 68.0, 22.0 ],
+					"style" : ""
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-7",
 					"maxclass" : "toggle",
 					"numinlets" : 1,
@@ -73,7 +127,7 @@
 					"patching_rect" : [ 415.0, 356.640228, 184.0, 51.0 ],
 					"presentation" : 1,
 					"presentation_linecount" : 15,
-					"presentation_rect" : [ 433.5, 380.0, 52.0, 212.0 ],
+					"presentation_rect" : [ 433.5, 380.0, 56.0, 212.0 ],
 					"style" : "",
 					"text" : "This pipeline separates values based on the spaces between them"
 				}
@@ -89,8 +143,8 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 415.0, 296.5, 180.5, 51.0 ],
 					"presentation" : 1,
-					"presentation_linecount" : 18,
-					"presentation_rect" : [ 418.5, 303.0, 52.0, 252.0 ],
+					"presentation_linecount" : 16,
+					"presentation_rect" : [ 418.5, 303.0, 56.0, 225.0 ],
 					"style" : "",
 					"text" : "Ensure serial port and baud rate are configured exactly the same as arduino"
 				}
@@ -123,8 +177,8 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 73.0, 122.0, 120.0, 37.0 ],
 					"presentation" : 1,
-					"presentation_linecount" : 7,
-					"presentation_rect" : [ 662.0, 441.509888, 51.0, 104.0 ],
+					"presentation_linecount" : 6,
+					"presentation_rect" : [ 662.0, 441.509888, 54.0, 91.0 ],
 					"style" : "",
 					"text" : "Start Polling the Serial Port "
 				}
@@ -188,13 +242,14 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-37",
+					"linecount" : 2,
 					"maxclass" : "newobj",
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 504.0, 689.0, 99.0, 22.0 ],
+					"patching_rect" : [ 504.0, 689.0, 115.0, 35.0 ],
 					"style" : "",
-					"text" : "scale 0 50 0 127"
+					"text" : "scale 0. 10. 0. 127. 0.0625"
 				}
 
 			}
@@ -405,6 +460,13 @@
  ],
 		"lines" : [ 			{
 				"patchline" : 				{
+					"destination" : [ "obj-37", 0 ],
+					"source" : [ "obj-14", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-83", 0 ],
 					"source" : [ "obj-2", 0 ]
 				}
@@ -413,6 +475,15 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-16", 0 ],
+					"order" : 1,
+					"source" : [ "obj-37", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-9", 0 ],
+					"order" : 0,
 					"source" : [ "obj-37", 0 ]
 				}
 
@@ -433,7 +504,16 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-37", 0 ],
+					"destination" : [ "obj-14", 0 ],
+					"order" : 0,
+					"source" : [ "obj-78", 1 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-3", 0 ],
+					"order" : 1,
 					"source" : [ "obj-78", 1 ]
 				}
 

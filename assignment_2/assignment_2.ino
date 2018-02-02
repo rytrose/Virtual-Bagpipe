@@ -66,11 +66,11 @@ void getCurrentDistance() {
   measuredDistance = duration * 0.034 / 2; // Calculating the distance
   if(measuredDistance < DISTANCE_MAX) {
     distanceMeasurements.push(measuredDistance);
-    distanceTimestamps.push(millis());
+    distanceTimestamps.push(micros());
   }
   else {
     distanceMeasurements.push(DISTANCE_MAX);
-    distanceTimestamps.push(millis());
+    distanceTimestamps.push(micros());
   }
 }
 
@@ -89,7 +89,7 @@ float playRate;
 void determinePlayState() {
   current = bufferAverage(distanceMeasurements, 0, distanceMeasurements.size());
   avgDistanceMeasurements.push(current);
-  avgDistanceTimestamps.push(millis());
+  avgDistanceTimestamps.push(micros());
  
   // When motion moves up, stop playing and force "breath"
   if((current - peak) > PEAK_THRESHOLD || current == 50.0){
@@ -99,10 +99,10 @@ void determinePlayState() {
     if(current == 50.0) peak = 50.0; 
   }
   // If not moving, force "breath"
-  else if(repeatCtr > 3) { 
-    peak = 0.0; 
-    playRate = 0.0;
-  }
+//  else if(repeatCtr > 5) { 
+//    peak = 0.0; 
+//    playRate = 0.0;
+//  }
   // If moving, update peak
   else {
     playState = PLAYING; 
@@ -122,7 +122,8 @@ void determinePlayRate() {
   float lookbackValue = avgDistanceMeasurements[lookbackIndex];
   float lookbackTimestamp = avgDistanceTimestamps[lookbackIndex];
 
-  playRate = max(0, (lookbackValue - currentValue) / (currentTimestamp - lookbackTimestamp));
+  float playRateRaw = max(0, (lookbackValue - currentValue) / (currentTimestamp - lookbackTimestamp));
+  if(playRateRaw * 100000 < 10.0) playRate = playRateRaw;
 }
 
 void loop() {
@@ -134,11 +135,11 @@ void loop() {
   determinePlayState();
   if(playState == PLAYING) {
     determinePlayRate();
-    analogWrite(BLUE, min(255, round(playRate * 100)));
+    analogWrite(BLUE, min(255, round(playRate * 100000)));
   }
   Serial.print(playState);
   Serial.print(" ");
-  Serial.println(playRate * 100);
+  Serial.println(playRate * 100000);
 //  Serial.print(playState);
 //  Serial.print(" : ");
 //  Serial.print(current); 
