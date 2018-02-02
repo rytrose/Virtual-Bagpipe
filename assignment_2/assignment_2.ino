@@ -16,7 +16,7 @@
 #define DISTANCE_MAX 50
 #define DISTANCE_HISTORY 10
 #define PEAK_THRESHOLD 2
-#define PLAYRATE_LOOKBACK 4
+#define PLAYRATE_LOOKBACK 1
 
 // Playing state
 #define PLAYING 1
@@ -45,7 +45,9 @@ float bufferAverage(CircularBuffer<int,DISTANCE_HISTORY> b, int i1, int i2) {
 int measuredDistance = 0;
 long duration = 0.0;
 CircularBuffer<int,DISTANCE_HISTORY> distanceMeasurements;
-CircularBuffer<unsigned long,DISTANCE_HISTORY> distanceTimestamps; 
+CircularBuffer<float,DISTANCE_HISTORY> avgDistanceMeasurements;
+CircularBuffer<unsigned long,DISTANCE_HISTORY> distanceTimestamps;
+CircularBuffer<unsigned long,DISTANCE_HISTORY> avgDistanceTimestamps; 
 
 void getCurrentDistance() {
   digitalWrite(TRIG, LOW); // Turn off ultrasound signal
@@ -79,6 +81,8 @@ float playRate;
 
 void determinePlayState() {
   current = bufferAverage(distanceMeasurements, 0, distanceMeasurements.size());
+  avgDistanceMeasurements.push(current);
+  avgDistanceTimestamps.push(millis());
  
   // When motion moves up, stop playing and force "breath"
   if((current - peak) > PEAK_THRESHOLD || current == 50.0){
@@ -102,15 +106,16 @@ void determinePlayState() {
 
   if(previous == current) repeatCtr++;
   previous = current;
+  
 }
 
 
 void determinePlayRate() {
-  float currentValue = distanceMeasurements.last();
-  float currentTimestamp = distanceTimestamps.last();
-  float lookbackIndex = max(0, distanceMeasurements.size() - PLAYRATE_LOOKBACK);
-  float lookbackValue = distanceMeasurements[lookbackIndex];
-  float lookbackTimestamp = distanceTimestamps[lookbackIndex];
+  float currentValue = avgDistanceMeasurements.last();
+  float currentTimestamp = avgDistanceTimestamps.last();
+  float lookbackIndex = max(0, avgDistanceMeasurements.size() - 1 - PLAYRATE_LOOKBACK);
+  float lookbackValue = avgDistanceMeasurements[lookbackIndex];
+  float lookbackTimestamp = avgDistanceTimestamps[lookbackIndex];
 
   playRate = max(0, (lookbackValue - currentValue) / (currentTimestamp - lookbackTimestamp));
 }
