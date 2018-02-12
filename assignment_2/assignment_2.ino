@@ -18,6 +18,7 @@
 #define BTN1 6
 #define BTN2 5
 #define BTN3 4
+#define POT 0
 
 // Thresholds, data pruning constants
 #define DISTANCE_MAX 50
@@ -135,6 +136,17 @@ void determinePlayRate() {
   if(playRateRaw * 100000 < 10.0) playRate = playRateRaw;
 }
 
+int potSlider;
+int root;
+void getRoot() {
+  int readPot = analogRead(0);
+  if(readPot > 10) {
+    potSlider = readPot;
+  }
+
+  root = map(potSlider, 10, 980, 0, 12);
+}
+
 void loop() {
   analogWrite(RED, 0);
   analogWrite(BLUE, 0);
@@ -146,6 +158,8 @@ void loop() {
     determinePlayRate();
     analogWrite(BLUE, min(255, round(playRate * 100000)));
   }
+  getRoot();
+  
   Serial.print(playState);
   Serial.print(" ");
   Serial.print(playRate * 100000);
@@ -156,5 +170,7 @@ void loop() {
   Serial.print(" ");
   Serial.print(digitalRead(BTN2));
   Serial.print(" ");
-  Serial.println(digitalRead(BTN3));
+  Serial.print(digitalRead(BTN3));
+  Serial.print(" ");
+  Serial.println(root);
 }
