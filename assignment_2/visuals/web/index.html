@@ -236,8 +236,10 @@
 
 			function render() {
 
-				particles.rotation.x += (flow / 30000);
-				particles.rotation.y += (flow / 10000);
+				if((root_note + third_note + fifth_note + seventh_note) > 0) {
+					particles.rotation.x += (flow / 30000);
+					particles.rotation.y += (flow / 10000);
+				}
 
 				var geometry = particles.geometry;
 				var attributes = geometry.attributes;

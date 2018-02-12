@@ -136,27 +136,22 @@ void determinePlayRate() {
   if(playRateRaw * 100000 < 10.0) playRate = playRateRaw;
 }
 
-int potSlider;
+int potSlider = 200;
 int root;
+int readPot;
 void getRoot() {
-  int readPot = analogRead(0);
-  if(readPot > 10) {
+  readPot = analogRead(0);
+  if(readPot > 200) {
     potSlider = readPot;
   }
-
-  root = map(potSlider, 10, 980, 0, 12);
+  root = map(potSlider, 200, 1023, 0, 12);
 }
 
-void loop() {
-  analogWrite(RED, 0);
-  analogWrite(BLUE, 0);
-  analogWrite(GREEN, 0);
-  
+void loop() {  
   getCurrentDistance();
   determinePlayState();
   if(playState == PLAYING) {
     determinePlayRate();
-    analogWrite(BLUE, min(255, round(playRate * 100000)));
   }
   getRoot();
   
