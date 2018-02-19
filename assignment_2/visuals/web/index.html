@@ -236,6 +236,7 @@
 
 			function render() {
 
+				// SETS ROTATION PROPORTIONAL TO FLOW
 				if((root_note + third_note + fifth_note + seventh_note) > 0) {
 					particles.rotation.x += (flow / 30000);
 					particles.rotation.y += (flow / 10000);
@@ -258,34 +259,13 @@
 				var new_color = new THREE.Color();
 
 				for ( var i = 0, l = lenVertices; i < l; i ++ ) {
+					// USES THE SUM OF BUTTON STATUSES TO CALCULATE A COLOR IN HSL, WITH MINOR FLUCTUATION WITH FLOW
 					new_color.setHSL((root_note + third_note + fifth_note + seventh_note) * 0.18 + (flow / 635) + 0.1 * ( i / l ), 1.0, 0.5 );
 					new_color.toArray( new_colors, i * 3 );
 				}
 
 				attributes.customColor.copyArray(new_colors)
 				attributes.customColor.needsUpdate = true;
-
-
-				// if ( intersects.length > 0 ) {
-
-				// 	if ( INTERSECTED != intersects[ 0 ].index ) {
-
-				// 		attributes.size.array[ INTERSECTED ] = PARTICLE_SIZE;
-
-				// 		INTERSECTED = intersects[ 0 ].index;
-
-				// 		attributes.size.array[ INTERSECTED ] = PARTICLE_SIZE * 1.25;
-				// 		attributes.size.needsUpdate = true;
-
-				// 	}
-
-				// } else if ( INTERSECTED !== null ) {
-
-				// 	attributes.size.array[ INTERSECTED ] = PARTICLE_SIZE;
-				// 	attributes.size.needsUpdate = true;
-				// 	INTERSECTED = null;
-
-				// }
 
 				renderer.render( scene, camera );
 

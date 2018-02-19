@@ -73,7 +73,7 @@ void getCurrentDistance() {
   delayMicroseconds(10);
   digitalWrite(TRIG, LOW); // Turn off ultrasound signal
   duration = pulseIn(ECHO, HIGH); // Reads ultrasound, returns travel time in µs
-  measuredDistance = duration * 0.034 / 2; // Calculating the distance
+  measuredDistance = duration * 0.034 / 2; // Cal`culating the distance
   if(measuredDistance < DISTANCE_MAX) {
     distanceMeasurements.push(measuredDistance);
     distanceTimestamps.push(micros());
