@@ -11,9 +11,6 @@
 // Pin definitions
 #define TRIG 13
 #define ECHO 12
-#define RED 11
-#define GREEN 9
-#define BLUE 10
 #define BTN0 7
 #define BTN1 6
 #define BTN2 5
@@ -36,16 +33,13 @@ void setup() {
   pinMode(TRIG, OUTPUT); // Ultrasound output
   pinMode(ECHO, INPUT); // Ultrasound input
 
-  pinMode(RED, OUTPUT); // Red output
-  pinMode(BLUE, OUTPUT); // Red output
-  pinMode(GREEN, OUTPUT); // Red output
-
   pinMode(BTN0, INPUT);
   pinMode(BTN1, INPUT);
   pinMode(BTN2, INPUT);
   pinMode(BTN3, INPUT);
 }
 
+// Helper that returns the average value of a buffer
 float bufferAverage(CircularBuffer<int,DISTANCE_HISTORY> b, int i1, int i2) {
   float sum = 0.0;
   for(int i = i1; i < i2; i++) {
@@ -57,7 +51,7 @@ float bufferAverage(CircularBuffer<int,DISTANCE_HISTORY> b, int i1, int i2) {
 /*
  * getCurrentDistance()
  *    Measures the distance from the ultrasound sensor.
- *    Output: sets `distance`
+ *    Output: adds values and timestamps to `distanceMeasurements` and `distanceTimestamps`
  */
 int measuredDistance = 0;
 long duration = 0.0;
@@ -108,11 +102,15 @@ void determinePlayState() {
     playRate = 0.0;
     if(current == 50.0) peak = 50.0; 
   }
+  
   // If not moving, force "breath"
 //  else if(repeatCtr > 5) { 
 //    peak = 0.0; 
 //    playRate = 0.0;
 //  }
+// This didn't work well so I cut it out
+
+
   // If moving, update peak
   else {
     playState = PLAYING; 
@@ -124,7 +122,11 @@ void determinePlayState() {
   
 }
 
-
+/*
+ * determinePlayRate()
+ *    Determines how fast the user is moving toward the sensor.
+ *    Output: sets `playRate`
+ */
 void determinePlayRate() {
   float currentValue = avgDistanceMeasurements.last();
   float currentTimestamp = avgDistanceTimestamps.last();
@@ -132,7 +134,10 @@ void determinePlayRate() {
   float lookbackValue = avgDistanceMeasurements[lookbackIndex];
   float lookbackTimestamp = avgDistanceTimestamps[lookbackIndex];
 
+  // Use the average of the past PLAYRATE_LOOKBACK values to determine rate
   float playRateRaw = max(0, (lookbackValue - currentValue) / (currentTimestamp - lookbackTimestamp));
+
+  // Make sure the value doesn't spike
   if(playRateRaw * 100000 < 10.0) playRate = playRateRaw;
 }
 
@@ -157,6 +162,7 @@ void loop() {
   
   Serial.print(playState);
   Serial.print(" ");
+  // Time makes a very small number, so multuply by a big number to get the sig figs
   Serial.print(playRate * 100000);
   Serial.print(" ");
   Serial.print(digitalRead(BTN0));
